@@ -94,7 +94,7 @@ export const CreateVPS = () => {
 
         if (currentStep === totalSteps - 1) {
             setIsLoading(true)
-            postCreateVPS(auth?.data.token ?? '', {
+            postCreateVPS(auth?.data?.token ?? '', {
                 config_id: configId as number,
                 description,
                 flavorId: flavorId as string,
