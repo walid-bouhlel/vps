@@ -7,11 +7,13 @@ import { VPSModel, getVPSList } from '../_requests/getVPSList';
 import { DistributionModel, getDistributionList } from '../_requests/getDistributionList';
 import { ConfigModel, getConfigList } from '../_requests/getConfigList';
 import { OSModel, getOSList } from '../_requests/getOSList';
+import { useNavigate } from 'react-router-dom';
+import { Loader } from '../../../_metronic/layout/components/loader/Loader';
 
 
 type VPSItemProps = { item: VPSModel, distributionList: DistributionModel[], OSList: OSModel[], configList: ConfigModel[] }
 
-const VPSItem = ({ item: { id, instance, server_name, description, ipv4, config_id, os_id }, distributionList, OSList, configList }: VPSItemProps) => {
+const VPSItem = ({ item: { instance, server_name, description, ipv4, config_id, os_id }, distributionList, OSList, configList }: VPSItemProps) => {
     const currentConfig = configList.find(({ id }) => config_id === id)
     const currentOS = OSList.find(({ id }) => id === os_id)
     const currentDistribution = distributionList.find(({ id }) => currentOS?.distribution_id === id)
@@ -23,8 +25,7 @@ const VPSItem = ({ item: { id, instance, server_name, description, ipv4, config_
                 <div className='symbol symbol-50px me-5'>
                     <img
                         src={currentDistribution?.logopath}
-                        className=''
-                        alt=''
+                        alt={currentDistribution?.name}
                     />
                 </div>
                 <div className='d-flex justify-content-start flex-column'>
@@ -38,9 +39,9 @@ const VPSItem = ({ item: { id, instance, server_name, description, ipv4, config_
             </div>
         </td>
         <td>
-            <a href='#' className='text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6'>
+            <span className='text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6'>
                 {ipv4}
-            </a>
+            </span>
         </td>
         <td> <a href='#' className='text-gray-900 fw-bold text-hover-primary d-block mb-1 fs-6'>
             {currentConfig?.name}
@@ -93,14 +94,31 @@ const ListVPS = () => {
     const [distributionList, setDistributionList] = useState<DistributionModel[]>([]);
     const [OSList, setOSList] = useState<OSModel[]>([]);
 
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    const navigate = useNavigate()
+
     useEffect(() => {
         if (auth?.data) {
-            getVPSList(auth.data.token).then((response) => setVPSList(response.data))
+            getVPSList(auth.data.token).then((response) => {
+                setVPSList(response.data)
+            })
             getConfigList(auth.data.token).then((response) => setConfigList(response))
             getDistributionList(auth.data.token).then((response) => setDistributionList(response.data))
             getOSList(auth.data.token).then((response) => setOSList(response))
         }
     }, [])
+
+
+    useEffect(() => {
+        setIsLoading(VPSList.length === 0 || configList.length === 0 || distributionList.length === 0 || OSList.length === 0)
+
+    }, [VPSList, configList, distributionList, OSList])
+
+
+    if (isLoading) {
+        return <Loader />
+    }
 
 
     return <div className={`card`}>
@@ -111,7 +129,7 @@ const ListVPS = () => {
                 <span className='text-muted mt-1 fw-semibold fs-7'>These are the VPS you created</span>
             </h3>
             <div className='card-toolbar'>
-                <a href='#' className='btn btn-sm btn-light-primary'>
+                <a href='#' className='btn btn-sm btn-light-primary' onClick={() => navigate('/vps/create')}>
                     <KTIcon iconName='plus' className='fs-2' />
                     Create a new VPS
                 </a>

@@ -3,6 +3,11 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 6px;
-  }
+    gap: 32px;
+    width: 100%;
+}
 
+.logo {
+    width: 50px;
+    margin-right: 32px;
+}

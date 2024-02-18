@@ -1,11 +1,11 @@
 import { GET_OS_LIST } from "./constants";
 
 export type OSModel = {
-    id: string;
+    id: number;
     name: string;
     nameInStack: string;
     idInStack: string;
-    distribution_id: string;
+    distribution_id: number;
     version: string;
     created_at: string | null;
     updated_at: string | null;

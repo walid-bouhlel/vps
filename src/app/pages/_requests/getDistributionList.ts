@@ -1,7 +1,7 @@
 import { GET_DISTRIBUTION_LIST } from "./constants";
 
 export type DistributionModel = {
-    id: string;
+    id: number;
     name: string;
     logopath: string;
     created_at: string | null;

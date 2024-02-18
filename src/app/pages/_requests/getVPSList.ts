@@ -1,13 +1,13 @@
 import { GET_VPS_LIST } from "./constants";
 
 export type VPSModel = {
-    id: string;
+    id: number;
     instance: string;
     server_name: string;
     description: string;
     ipv4: string;
-    os_id: string;
-    config_id: string;
+    os_id: number;
+    config_id: number;
 }
 
 export type VPSListModel = { data: VPSModel[] }

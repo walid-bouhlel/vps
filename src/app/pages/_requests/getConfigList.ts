@@ -1,7 +1,7 @@
 import { GET_CONFIG_LIST } from "./constants";
 
 export type ConfigModel = {
-    id: string;
+    id: number;
     name: string;
     nameInStack: string;
     stackId: string;
