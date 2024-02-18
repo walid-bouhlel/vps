@@ -1,12 +1,13 @@
-import {lazy, FC, Suspense} from 'react'
-import {Route, Routes, Navigate} from 'react-router-dom'
-import {MasterLayout} from '../../_metronic/layout/MasterLayout'
+import { lazy, FC, Suspense } from 'react'
+import { Route, Routes, Navigate } from 'react-router-dom'
+import { MasterLayout } from '../../_metronic/layout/MasterLayout'
 import TopBarProgress from 'react-topbar-progress-indicator'
-import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
-import {MenuTestPage} from '../pages/MenuTestPage'
-import {getCSSVariableValue} from '../../_metronic/assets/ts/_utils'
-import {WithChildren} from '../../_metronic/helpers'
+import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
+import { MenuTestPage } from '../pages/MenuTestPage'
+import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
+import { WithChildren } from '../../_metronic/helpers'
 import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
+import { ListVPS } from '../pages/list-vps/ListVPS'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
@@ -27,7 +28,7 @@ const PrivateRoutes = () => {
           path='vps/list'
           element={
             <SuspensedView>
-             <p>gi</p>
+              <ListVPS />
             </SuspensedView>
           }
         />
@@ -35,15 +36,79 @@ const PrivateRoutes = () => {
           path='vps/create'
           element={
             <SuspensedView>
-              <ProfilePage />
+              <p>Create VPS</p>
             </SuspensedView>
           }
         />
         <Route
-          path='vps/create'
+          path='config/list'
           element={
             <SuspensedView>
-              <ProfilePage />
+              <p>Config List</p>
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='config/create'
+          element={
+            <SuspensedView>
+              <p>Config Create</p>
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='distribution/list'
+          element={
+            <SuspensedView>
+              <p>Distribution List</p>
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='distribution/create'
+          element={
+            <SuspensedView>
+              <p>Distribution Create</p>
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='os/list'
+          element={
+            <SuspensedView>
+              <p>OS List</p>
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='os/create'
+          element={
+            <SuspensedView>
+              <p>OS Create</p>
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='admin/user-management'
+          element={
+            <SuspensedView>
+              <p>User Management</p>
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='profile'
+          element={
+            <SuspensedView>
+              <p>My profile</p>
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='keys'
+          element={
+            <SuspensedView>
+              <p>Key Pairs</p>
             </SuspensedView>
           }
         />
@@ -54,7 +119,7 @@ const PrivateRoutes = () => {
   )
 }
 
-const SuspensedView: FC<WithChildren> = ({children}) => {
+const SuspensedView: FC<WithChildren> = ({ children }) => {
   const baseColor = getCSSVariableValue('--bs-primary')
   TopBarProgress.config({
     barColors: {
@@ -66,4 +131,4 @@ const SuspensedView: FC<WithChildren> = ({children}) => {
   return <Suspense fallback={<TopBarProgress />}>{children}</Suspense>
 }
 
-export {PrivateRoutes}
+export { PrivateRoutes }
