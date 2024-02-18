@@ -129,8 +129,8 @@ const ListVPS = () => {
                         <tr className='fw-bold text-muted bg-light'>
                             <th className='ps-4 min-w-325px rounded-start'>VPS</th>
                             <th className='min-w-125px'>IP v4</th>
-                            <th className='min-w-125px'>Deposit</th>
-                            <th className='min-w-200px'>Agent</th>
+                            <th className='min-w-125px'>Config</th>
+                            <th className='min-w-200px'>Operating System</th>
                             <th className='min-w-150px'>Status</th>
                             <th className='min-w-200px text-end rounded-end'></th>
                         </tr>
