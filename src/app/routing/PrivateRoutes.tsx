@@ -3,12 +3,12 @@ import { Route, Routes, Navigate } from 'react-router-dom'
 import { MasterLayout } from '../../_metronic/layout/MasterLayout'
 import TopBarProgress from 'react-topbar-progress-indicator'
 import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
-import { MenuTestPage } from '../pages/MenuTestPage'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
 import { WithChildren } from '../../_metronic/helpers'
-import BuilderPageWrapper from '../pages/layout-builder/BuilderPageWrapper'
 import { ListVPS } from '../pages/list-vps/ListVPS'
 import { CreateVPS } from '../pages/create-vps/CreateVPS'
+import { KeyPairs } from '../pages/create-vps/keypairs/KeyPairs'
+import { MyProfile } from '../pages/create-vps/profile/MyProfile'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
@@ -101,7 +101,7 @@ const PrivateRoutes = () => {
           path='profile'
           element={
             <SuspensedView>
-              <p>My profile</p>
+              <MyProfile />
             </SuspensedView>
           }
         />
@@ -109,7 +109,7 @@ const PrivateRoutes = () => {
           path='keys'
           element={
             <SuspensedView>
-              <p>Key Pairs</p>
+              <KeyPairs />
             </SuspensedView>
           }
         />

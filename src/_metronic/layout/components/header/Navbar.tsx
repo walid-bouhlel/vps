@@ -1,7 +1,8 @@
 import clsx from 'clsx'
-import {KTIcon, toAbsoluteUrl} from '../../../helpers'
-import {HeaderNotificationsMenu, HeaderUserMenu, Search, ThemeModeSwitcher} from '../../../partials'
-import {useLayout} from '../../core'
+import { KTIcon, toAbsoluteUrl } from '../../../helpers'
+import { HeaderNotificationsMenu, HeaderUserMenu, Search, ThemeModeSwitcher } from '../../../partials'
+import { useLayout } from '../../core'
+import { useAuth } from '../../../../app/modules/auth'
 
 const itemClass = 'ms-1 ms-md-4'
 const btnClass =
@@ -10,7 +11,9 @@ const userAvatarClass = 'symbol-35px'
 const btnIconClass = 'fs-2'
 
 const Navbar = () => {
-  const {config} = useLayout()
+  const { config } = useLayout()
+  const { currentUser } = useAuth()
+
   return (
     <div className='app-navbar flex-shrink-0'>
       <div className={clsx('app-navbar-item align-items-stretch', itemClass)}>
@@ -46,8 +49,7 @@ const Navbar = () => {
           data-kt-menu-attach='parent'
           data-kt-menu-placement='bottom-end'
         >
-          {/* <img src={toAbsoluteUrl('media/avatars/300-3.jpg')} alt='' /> */}
-          <img src="https://ui-avatars.com/api/?name=John+Doe" />
+          <img src={`https://ui-avatars.com/api/?name=${currentUser?.name}`} />
         </div>
         <HeaderUserMenu />
       </div>
@@ -66,4 +68,4 @@ const Navbar = () => {
   )
 }
 
-export {Navbar}
+export { Navbar }
