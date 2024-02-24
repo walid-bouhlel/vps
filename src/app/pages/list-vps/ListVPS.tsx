@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { KTIcon, toAbsoluteUrl } from '../../../_metronic/helpers'
+import { useEffect, useState } from 'react';
+import { KTIcon } from '../../../_metronic/helpers'
 
 import styles from './ListVPS.module.scss'
 import { useAuth } from '../../modules/auth';
@@ -89,12 +89,10 @@ const VPSItem = ({ item: { instance, server_name, description, ipv4, config_id, 
 
 const ListVPS = () => {
     const { auth } = useAuth()
-    const [VPSList, setVPSList] = useState<VPSModel[]>([]);
-    const [configList, setConfigList] = useState<ConfigModel[]>([]);
-    const [distributionList, setDistributionList] = useState<DistributionModel[]>([]);
-    const [OSList, setOSList] = useState<OSModel[]>([]);
-
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [VPSList, setVPSList] = useState<VPSModel[] | null>(null);
+    const [configList, setConfigList] = useState<ConfigModel[] | null>(null);
+    const [distributionList, setDistributionList] = useState<DistributionModel[] | null>(null);
+    const [OSList, setOSList] = useState<OSModel[] | null>(null);
 
     const navigate = useNavigate()
 
@@ -109,14 +107,7 @@ const ListVPS = () => {
         }
     }, [])
 
-
-    useEffect(() => {
-        setIsLoading(VPSList.length === 0 || configList.length === 0 || distributionList.length === 0 || OSList.length === 0)
-
-    }, [VPSList, configList, distributionList, OSList])
-
-
-    if (isLoading) {
+    if (VPSList === null || configList === null || distributionList === null || OSList === null) {
         return <Loader />
     }
 

@@ -9,6 +9,9 @@ import { ListVPS } from '../pages/list-vps/ListVPS'
 import { CreateVPS } from '../pages/create-vps/CreateVPS'
 import { KeyPairs } from '../pages/create-vps/keypairs/KeyPairs'
 import { MyProfile } from '../pages/create-vps/profile/MyProfile'
+import { ListConfig } from '../pages/list-config/ListConfig'
+import { ListDistribution } from '../pages/list-distribution/ListDistribution'
+import { ListOS } from '../pages/list-os/ListOS'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
@@ -45,7 +48,7 @@ const PrivateRoutes = () => {
           path='config/list'
           element={
             <SuspensedView>
-              <p>Config List</p>
+              <ListConfig />
             </SuspensedView>
           }
         />
@@ -61,7 +64,7 @@ const PrivateRoutes = () => {
           path='distribution/list'
           element={
             <SuspensedView>
-              <p>Distribution List</p>
+              <ListDistribution />
             </SuspensedView>
           }
         />
@@ -77,7 +80,7 @@ const PrivateRoutes = () => {
           path='os/list'
           element={
             <SuspensedView>
-              <p>OS List</p>
+              <ListOS />
             </SuspensedView>
           }
         />
