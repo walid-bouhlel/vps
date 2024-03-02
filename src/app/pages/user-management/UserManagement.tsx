@@ -30,7 +30,14 @@ type ItemProps = { item: UserModel }
 
 const Item = ({ item: { id, name, email, is_admin, created_at } }: ItemProps) => {
 
+    const { currentUser } = useAuth()
+
     return <tr>
+        <td>
+            <div className='d-flex align-items-center' >
+                <img style={{ borderRadius: 6 }} width={25} height={25} src={`https://ui-avatars.com/api/?name=${name}`} />
+            </div>
+        </td>
         <td>
             <div className='d-flex align-items-center'>
                 {id}
@@ -38,7 +45,7 @@ const Item = ({ item: { id, name, email, is_admin, created_at } }: ItemProps) =>
         </td>
         <td>
             <div className='d-flex align-items-center'>
-                {name}
+                {name} {String(currentUser?.id) === id && <span className='badge badge-light-info fw-bolder fs-8 px-2 py-1 ms-2'>You</span>} {Boolean(is_admin) && <span className='badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2'>Admin</span>}
             </div>
         </td>
         <td>
@@ -52,16 +59,11 @@ const Item = ({ item: { id, name, email, is_admin, created_at } }: ItemProps) =>
             </span>
 
         </td>
-        <td>
-            <div className='d-flex align-items-center'>
-                {Boolean(is_admin) && <span className='badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2'>Admin</span>}
-            </div>
-        </td>
     </tr>
 }
 
 export const UserManagement = () => {
-    const { auth } = useAuth();
+    const { auth, currentUser } = useAuth();
 
     const [userList, setUserList] = useState<UserModel[] | null>(null);
 
@@ -79,6 +81,51 @@ export const UserManagement = () => {
         return <Loader />
     }
 
+    const userListToDisplay = userList.filter(({ is_admin }) => {
+        if (selectedUserType === UserType.ALL) {
+            return true;
+        }
+
+        if (selectedUserType === UserType.ADMIN && is_admin === 1) {
+            return true;
+        }
+
+        if (selectedUserType === UserType.NON_ADMIN && is_admin === 0) {
+            return true;
+        }
+
+        return false;
+    }).filter(({ name, email }) => {
+        if (searchValue.trim().length > 0) {
+            if (name.toLowerCase().includes(searchValue.trim().toLowerCase())) {
+                return true;
+            }
+
+            if (email.toLowerCase().includes(searchValue.trim().toLowerCase())) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
+    })
+
+    userListToDisplay.sort((a, b) => {
+        if (b.id === String(currentUser?.id)) {
+            return 1;
+        }
+
+        if (a.id === String(currentUser?.id)) {
+            return -1;
+        }
+
+        if (a.is_admin === 1) {
+            return -1;
+        }
+
+        return 1;
+    })
 
     return <div className={`card`}>
         {/* begin::Header */}
@@ -109,45 +156,17 @@ export const UserManagement = () => {
                     {/* begin::Table head */}
                     <thead>
                         <tr className='fw-bold text-muted bg-light'>
+                            <th className='ps-4 min-w-25px rounded-start center'></th>
                             <th className='ps-4 min-w-75px rounded-start center'>ID</th>
                             <th className='min-w-150px'>Name</th>
                             <th className='ps-4 min-w-350px rounded-start'>Email</th>
                             <th className='min-w-125px'>Created At</th>
-                            <th className='min-w-100px'></th>
                         </tr>
                     </thead>
                     {/* end::Table head */}
                     {/* begin::Table body */}
                     <tbody>
-                        {userList.filter(({ is_admin }) => {
-                            if (selectedUserType === UserType.ALL) {
-                                return true;
-                            }
-
-                            if (selectedUserType === UserType.ADMIN && is_admin === 1) {
-                                return true;
-                            }
-
-                            if (selectedUserType === UserType.NON_ADMIN && is_admin === 0) {
-                                return true;
-                            }
-
-                            return false;
-                        }).filter(({ name, email }) => {
-                            if (searchValue.trim().length > 0) {
-                                if (name.toLowerCase().includes(searchValue.trim().toLowerCase())) {
-                                    return true;
-                                }
-
-                                if (email.toLowerCase().includes(searchValue.trim().toLowerCase())) {
-                                    return true;
-                                }
-
-                                return false;
-                            }
-
-                            return true;
-                        }).map(item => {
+                        {userListToDisplay.map(item => {
                             return <Item key={item.id} item={item} />
                         })}
                     </tbody>
