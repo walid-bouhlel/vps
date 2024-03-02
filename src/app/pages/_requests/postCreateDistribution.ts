@@ -1,17 +1,12 @@
-import { POST_CREATE_VPS } from "./constants";
+import { POST_CREATE_DISTRIBUTION } from "./constants";
 
-export type CreateVPSModel = {
-    imageId: string;
-    flavorId: string;
-    userId: number;
-    description: string;
-    instance: string;
-    os_id: number;
-    config_id: number
+export type CreateDistributionModel = {
+    name: string;
+    logopath: string;
 }
 
 
-export function postCreateVPS(token: string, data: CreateVPSModel) {
+export function postCreateDistribution(token: string, data: CreateDistributionModel) {
 
     const formData = new FormData();
 
@@ -20,7 +15,7 @@ export function postCreateVPS(token: string, data: CreateVPSModel) {
     }
 
 
-    return fetch(POST_CREATE_VPS, {
+    return fetch(POST_CREATE_DISTRIBUTION, {
         method: 'POST', headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/vnd.api+json',

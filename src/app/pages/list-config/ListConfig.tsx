@@ -4,14 +4,23 @@ import { KTIcon } from '../../../_metronic/helpers'
 
 import { useAuth } from '../../modules/auth';
 import { ConfigModel, getConfigList } from '../_requests/getConfigList';
-import { useNavigate } from 'react-router-dom';
 import { Loader } from '../../../_metronic/layout/components/loader/Loader';
 import { formatDateTime } from '../_utils/date';
+import { CreateConfigModal } from './CreateConfigModal';
+import toast, { Toaster } from 'react-hot-toast';
+import { deleteConfig } from '../_requests/deleteConfig';
+import { SmallLoader } from '../_components/SmallLoader/SmallLoader';
 
 
-type ItemProps = { item: ConfigModel }
+import styles from './ListConfig.module.scss'
 
-const Item = ({ item: { id, disk, name, nameInStack, ram, stackId, swap, vcpus, created_at } }: ItemProps) => {
+
+type ItemProps = { item: ConfigModel; refresh: () => void; }
+
+const Item = ({ item: { id, disk, name, nameInStack, ram, stackId, swap, vcpus, created_at }, refresh }: ItemProps) => {
+
+    const { auth } = useAuth()
+    const [isDeleting, setIsDeleting] = useState<boolean>(false)
 
 
     return <tr>
@@ -60,6 +69,16 @@ const Item = ({ item: { id, disk, name, nameInStack, ram, stackId, swap, vcpus, 
             </span>
 
         </td>
+        <td onClick={() => {
+            if (auth?.data.token) {
+                setIsDeleting(true)
+                deleteConfig(auth?.data.token, String(id)).then(() => { refresh(); }).catch(() => { toast.error('Error occured') }).finally(() => {
+                    setIsDeleting(false);
+                })
+            }
+        }}>
+            <div className={styles.deleteButtonContainer}>{isDeleting ? <SmallLoader /> : <KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} />}</div>
+        </td>
 
 
     </tr>
@@ -70,7 +89,9 @@ const ListConfig = () => {
     const { auth } = useAuth()
     const [configList, setConfigList] = useState<ConfigModel[] | null>(null);
 
-    const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const [shouldShowCreationModal, setShouldShowCreationModal] = useState<boolean>(false);
 
     useEffect(() => {
         if (auth?.data) {
@@ -78,8 +99,17 @@ const ListConfig = () => {
         }
     }, [])
 
-    if (configList === null) {
+    if (configList === null || isLoading) {
         return <Loader />
+    }
+
+    const refresh = () => {
+        if (auth?.data) {
+            setIsLoading(true)
+            Promise.all([
+                getConfigList(auth.data.token).then((response) => setConfigList(response))
+            ]).finally(() => setIsLoading(false))
+        }
     }
 
 
@@ -91,7 +121,7 @@ const ListConfig = () => {
                 <span className='text-muted mt-1 fw-semibold fs-7'>List of available commercialised configurations</span>
             </h3>
             <div className='card-toolbar'>
-                <a href='#' className='btn btn-sm btn-light-primary' onClick={() => navigate('/config/create')}>
+                <a href='#' className='btn btn-sm btn-light-primary' onClick={() => setShouldShowCreationModal(true)}>
                     <KTIcon iconName='plus' className='fs-2' />
                     Create a new configuration
                 </a>
@@ -114,12 +144,13 @@ const ListConfig = () => {
                             <th className='min-w-125px'>Disk</th>
                             <th className='min-w-200px'>SWAP</th>
                             <th className='min-w-200px rounded-end'>Created At</th>
+                            <th className='min-w-100px rounded-end'></th>
                         </tr>
                     </thead>
                     {/* end::Table head */}
                     {/* begin::Table body */}
                     <tbody>
-                        {configList.map(item => <Item key={item.id} item={item} />)}
+                        {configList.map(item => <Item key={item.id} item={item} refresh={refresh} />)}
                     </tbody>
                     {/* end::Table body */}
                 </table>
@@ -128,6 +159,17 @@ const ListConfig = () => {
             {/* end::Table container */}
         </div >
         {/* begin::Body */}
+        <Toaster position="bottom-right" reverseOrder={false} />
+        <CreateConfigModal show={shouldShowCreationModal} handleClose={(shouldRefetch, error) => {
+            setShouldShowCreationModal(false);
+            if (shouldRefetch) {
+                refresh();
+            }
+
+            if (error) {
+                toast.error(error)
+            }
+        }} />
     </div >
 
 };

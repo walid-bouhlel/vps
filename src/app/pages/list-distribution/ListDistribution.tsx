@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { DistributionModel, getDistributionList } from "../_requests/getDistributionList";
-import { useNavigate } from "react-router-dom";
 import { KTIcon } from "../../../_metronic/helpers";
 import { Loader } from "../../../_metronic/layout/components/loader/Loader";
 import { useAuth } from "../../modules/auth";
@@ -9,6 +8,50 @@ import { formatDateTime } from "../_utils/date";
 import styles from './ListDistribution.module.scss'
 import { OSModel, getOSList } from "../_requests/getOSList";
 import { CreateDistributionModal } from "./CreateDistributionModal";
+import toast, { Toaster } from "react-hot-toast";
+import { SmallLoader } from "../_components/SmallLoader/SmallLoader";
+import { deleteDistribution } from "../_requests/deleteDistribution";
+
+type DistributionCardProps = {
+    distribution: DistributionModel;
+    OSList: OSModel[];
+    refresh: () => void;
+}
+
+
+const DistributionCard = ({ distribution, OSList, refresh }: DistributionCardProps) => {
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+    const { id, logopath, name, created_at } = distribution;
+
+    const { auth } = useAuth();
+
+    const doDeleteDistribution = () => {
+        if (auth?.data.token) {
+            setIsDeleting(true)
+            deleteDistribution(auth?.data.token, String(id)).then(() => { refresh() }).catch(() => { toast.error('Error occured') }).finally(() => setIsDeleting(false))
+        }
+    }
+
+    return <div className={`${styles.distCard} p-2`}>
+        <div className={`card-body py-3`}>
+            <div className="card md-6" >
+                <img className={`card-img-top ${styles.logo}`} src={logopath} alt={`${name} image`} />
+                <div className="card-body">
+                    <h2 className="card-title d-flex justify-content-between"><span>{name}<small>{id}</small></span> {isDeleting ? <SmallLoader /> : <div onClick={doDeleteDistribution}><KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} /></div>}</h2>
+                    <p className="card-text">Created At: {formatDateTime(created_at)}</p>
+                    <br />
+                    {OSList.some(({ distribution_id }) => distribution_id === id) && <>
+                        <h6>Available versions</h6>
+                        <ul>
+                            {OSList.filter(({ distribution_id }) => distribution_id === id).map(({ id: OSID, name }) => (<li key={OSID}>{name}</li>))}
+                        </ul>
+                    </>}
+                </div>
+            </div>
+        </div >
+    </div >
+}
 
 export const ListDistribution = () => {
     const { auth } = useAuth();
@@ -32,6 +75,15 @@ export const ListDistribution = () => {
         return <Loader />
     }
 
+    const refresh = () => {
+        if (auth?.data) {
+            setIsLoading(true)
+            Promise.all([
+                getDistributionList(auth.data.token).then((response) => setDistributionList(response.data)),
+                getOSList(auth.data.token).then((response) => setOSList(response))
+            ]).finally(() => setIsLoading(false))
+        }
+    }
 
 
     return (
@@ -52,36 +104,20 @@ export const ListDistribution = () => {
             {/* end::Header */}
             {/* begin::Body */}
             <div className="d-flex flex-wrap justify-content-center align-items-stretch">
-                {distributionList.map(({ id, logopath, name, created_at }) => (
-                    <div className={`${styles.distCard} p-2`}>
-                        <div className={`card-body py-3`}>
-                            <div className="card md-6" >
-                                <img className={`card-img-top ${styles.logo}`} src={logopath} alt={`${name} image`} />
-                                <div className="card-body">
-                                    <h2 className="card-title">{name}<small>{id}</small></h2>
-                                    <p className="card-text">Created At: {formatDateTime(created_at)}</p>
-                                    <br />
-                                    {OSList.some(({ distribution_id }) => distribution_id === id) && <>
-                                        <h6>Available versions</h6>
-                                        <ul>
-                                            {OSList.filter(({ distribution_id }) => distribution_id === id).map(({ id: OSID, name }) => (<li key={id}>{name}</li>))}
-                                        </ul>
-                                    </>}
-                                </div>
-                            </div>
-                        </div >
-                    </div>
+                {distributionList.map((distribution) => (
+                    <DistributionCard distribution={distribution} OSList={OSList} refresh={refresh} />
                 ))}
             </div>
             {/* begin::Body */}
-            <CreateDistributionModal show={shouldShowCreationModal} handleClose={(shouldRefetch) => {
+            <Toaster position="bottom-right" reverseOrder={false} />
+            <CreateDistributionModal show={shouldShowCreationModal} handleClose={(shouldRefetch, error) => {
                 setShouldShowCreationModal(false);
-                if (shouldRefetch && auth?.data) {
-                    setIsLoading(true)
-                    Promise.all([
-                        getDistributionList(auth.data.token).then((response) => setDistributionList(response.data)),
-                        getOSList(auth.data.token).then((response) => setOSList(response))
-                    ]).finally(() => setIsLoading(false))
+                if (shouldRefetch) {
+                    refresh()
+                }
+
+                if (error) {
+                    toast.error(error)
                 }
             }} />
         </div >

@@ -1,4 +1,4 @@
-import { lazy, FC, Suspense } from 'react'
+import { FC, Suspense } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
 import { MasterLayout } from '../../_metronic/layout/MasterLayout'
 import TopBarProgress from 'react-topbar-progress-indicator'
@@ -12,14 +12,9 @@ import { MyProfile } from '../pages/create-vps/profile/MyProfile'
 import { ListConfig } from '../pages/list-config/ListConfig'
 import { ListDistribution } from '../pages/list-distribution/ListDistribution'
 import { ListOS } from '../pages/list-os/ListOS'
+import { UserManagement } from '../pages/user-management/UserManagement'
 
 const PrivateRoutes = () => {
-  const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
-  const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
-  const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
-  const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
-  const ChatPage = lazy(() => import('../modules/apps/chat/ChatPage'))
-  const UsersPage = lazy(() => import('../modules/apps/user-management/UsersPage'))
 
   return (
     <Routes>
@@ -53,26 +48,10 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='config/create'
-          element={
-            <SuspensedView>
-              <p>Config Create</p>
-            </SuspensedView>
-          }
-        />
-        <Route
           path='distribution/list'
           element={
             <SuspensedView>
               <ListDistribution />
-            </SuspensedView>
-          }
-        />
-        <Route
-          path='distribution/create'
-          element={
-            <SuspensedView>
-              <p>Distribution Create</p>
             </SuspensedView>
           }
         />
@@ -85,18 +64,10 @@ const PrivateRoutes = () => {
           }
         />
         <Route
-          path='os/create'
-          element={
-            <SuspensedView>
-              <p>OS Create</p>
-            </SuspensedView>
-          }
-        />
-        <Route
           path='admin/user-management'
           element={
             <SuspensedView>
-              <p>User Management</p>
+              <UserManagement />
             </SuspensedView>
           }
         />

@@ -1,60 +1,16 @@
-
-
 import { createPortal } from 'react-dom'
 import { Modal } from 'react-bootstrap'
 import { KTIcon } from '../../../_metronic/helpers'
 import { useEffect, useRef, useState } from 'react';
 import zod, { z } from 'zod'
-import { postCreateDistribution } from '../_requests/createDistribution';
+import { postCreateDistribution } from '../_requests/postCreateDistribution';
 import { useAuth } from '../../modules/auth';
 import { Loader } from '../../../_metronic/layout/components/loader/Loader';
-
-
-type TextFieldProps = { value?: string; onValidChange?: (isValid: boolean) => void; isRequired?: boolean; description?: string; errorMessage: string; label: string; onChange: (v: string) => void; validator?: (str?: string) => boolean; }
-
-const TextField = ({ value, description, isRequired, errorMessage, onChange, onValidChange, label, validator = () => true }: TextFieldProps) => {
-    const hasChanged = useRef<boolean>();
-
-    useEffect(() => {
-        if (!hasChanged.current && value !== undefined && value !== '') {
-            hasChanged.current = true;
-        }
-
-        onValidChange?.(validator?.(value) ?? true)
-    }, [value])
-
-    return <div className='fv-row mb-10'>
-        <label className='d-flex align-items-center fs-5 fw-semibold mb-2'>
-            <span className={isRequired ? 'required' : ''}>{label}</span>
-            {description && <i
-                className='fas fa-exclamation-circle ms-2 fs-7'
-                data-bs-toggle='tooltip'
-                title={description}
-            ></i>}
-        </label>
-        <input
-            type='text'
-            className='form-control form-control-lg form-control-solid'
-            name='appname'
-            placeholder=''
-            value={value}
-            onChange={(e) =>
-                onChange(e.target.value)
-            }
-        />
-        {hasChanged.current && !validator(value) && <div className='fv-plugins-message-container'>
-            <div data-field='appname' data-validator='notEmpty' className='fv-help-block'>
-                Invalid {label}
-                {errorMessage && <><br />{errorMessage}</>}
-            </div>
-        </div>}
-    </div >
-}
-
+import { TextField } from '../_components/TextField/TextField';
 
 type Props = {
     show: boolean
-    handleClose: (shouldRefetch: boolean) => void
+    handleClose: (shouldRefetch: boolean, error?: string) => void
 }
 
 const modalsRoot = document.getElementById('root-modals') || document.body
@@ -78,9 +34,12 @@ const CreateDistributionModal = ({ show, handleClose }: Props) => {
             postCreateDistribution(auth.data.token, { name, logopath: logoPath }).then(() => {
                 setIsLoading(false);
                 handleClose(true);
-            }).catch(() => {
+            }).catch((response) => {
                 setIsLoading(false);
-                handleClose(false);
+                handleClose(false, response?.error ?? 'Error Occured');
+            }).finally(() => {
+                setName(undefined)
+                setLogoPath(undefined)
             })
         } else {
             setIsLoading(false);
@@ -95,7 +54,11 @@ const CreateDistributionModal = ({ show, handleClose }: Props) => {
             aria-hidden='true'
             dialogClassName='modal-dialog modal-dialog-centered mw-900px'
             show={show}
-            onHide={() => handleClose(false)}
+            onHide={() => {
+                handleClose(false)
+                setName(undefined)
+                setLogoPath(undefined)
+            }}
             backdrop={true}
         >
             {isLoading ? <Loader /> : (<><div className='modal-header'>
@@ -118,7 +81,7 @@ const CreateDistributionModal = ({ show, handleClose }: Props) => {
                 </div>
 
 
-                <div className='modal-body py-lg-10 px-lg-10'>
+                <div className='modal-body py-lg-10 px-lg-10 d-flex justify-content-end'>
                     <button
                         type='button'
                         className='btn btn-lg btn-primary'

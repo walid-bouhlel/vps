@@ -18,6 +18,9 @@ export function getDistributionList(token: string): Promise<DistributionListMode
             'Accept': 'application/vnd.api+json',
         },
     }).then(response => {
+        if (!response.ok) {
+            throw 'Error'
+        }
         return response.json()
     });
 }

@@ -1,30 +1,31 @@
-import { POST_CREATE_DISTRIBUTION } from "./constants";
+import { POST_CREATE_OS } from "./constants";
 
-export type CreateDistributionModel = {
+export type CreateOSModel = {
+    imageId: string;
     name: string;
-    logopath: string;
+    version: string;
+    distribution_id: number;
 }
 
 
-export function postCreateDistribution(token: string, data: CreateDistributionModel) {
+export function postCreateOS(token: string, data: CreateOSModel) {
 
     const formData = new FormData();
 
     for (const [key, value] of Object.entries(data)) {
-        console.log(key, value)
         formData.append(key, String(value));
     }
 
 
-    return fetch(POST_CREATE_DISTRIBUTION, {
+    return fetch(POST_CREATE_OS, {
         method: 'POST', headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/vnd.api+json',
         },
         body: formData
-    }).then(response => {
+    }).then(async (response) => {
         if (!response.ok) {
-            throw 'Error'
+            throw await response.json() ?? 'Error'
         }
         return response.json()
     });

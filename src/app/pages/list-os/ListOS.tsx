@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import toast, { Toaster } from 'react-hot-toast';
 import { DistributionModel, getDistributionList } from "../_requests/getDistributionList";
-import { useNavigate } from "react-router-dom";
 import { KTIcon } from "../../../_metronic/helpers";
 import { Loader } from "../../../_metronic/layout/components/loader/Loader";
 import { useAuth } from "../../modules/auth";
@@ -8,11 +8,16 @@ import { formatDateTime } from "../_utils/date";
 
 import styles from './ListOS.module.scss'
 import { OSModel, getOSList } from "../_requests/getOSList";
+import { CreateOSModal } from "./CreateOSModal";
+import { deleteOS } from "../_requests/deleteOS";
+import { SmallLoader } from "../_components/SmallLoader/SmallLoader";
 
-type ItemProps = { item: OSModel, distribution?: DistributionModel }
+type ItemProps = { item: OSModel, distribution?: DistributionModel, refresh: () => void }
 
-const Item = ({ item: { id, idInStack, name, nameInStack, version, created_at }, distribution }: ItemProps) => {
+const Item = ({ item: { id, idInStack, name, nameInStack, version, created_at }, distribution, refresh }: ItemProps) => {
 
+    const { auth } = useAuth();
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
     return <tr>
         <td>
@@ -48,6 +53,16 @@ const Item = ({ item: { id, idInStack, name, nameInStack, version, created_at },
             </span>
 
         </td>
+        <td onClick={() => {
+            if (auth?.data.token) {
+                setIsDeleting(true)
+                deleteOS(auth?.data.token, String(id)).then(() => { refresh(); }).catch(() => { toast.error('Error occured') }).finally(() => {
+                    setIsDeleting(false);
+                })
+            }
+        }}>
+            <div className={styles.deleteButtonContainer}>{isDeleting ? <SmallLoader /> : <KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} />}</div>
+        </td>
     </tr>
 }
 
@@ -59,7 +74,6 @@ export const ListOS = () => {
 
     const [selectedDistribution, setSelectedDistribution] = useState<string>('all');
 
-    const navigate = useNavigate()
 
     useEffect(() => {
         if (auth?.data) {
@@ -68,10 +82,22 @@ export const ListOS = () => {
         }
     }, [])
 
-    if (distributionList === null || OSList === null) {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [shouldShowCreationModal, setShouldShowCreationModal] = useState<boolean>(false);
+
+    if (distributionList === null || OSList === null || isLoading) {
         return <Loader />
     }
 
+    const refresh = () => {
+        if (auth?.data) {
+            setIsLoading(true)
+            Promise.all([
+                getDistributionList(auth.data.token).then((response) => setDistributionList(response.data)),
+                getOSList(auth.data.token).then((response) => setOSList(response))
+            ]).finally(() => setIsLoading(false))
+        }
+    }
 
     return (
         <div className={`card`}>
@@ -82,7 +108,7 @@ export const ListOS = () => {
                     <span className='text-muted mt-1 fw-semibold fs-7'>List of available operating systems</span>
                 </h3>
                 <div className='card-toolbar'>
-                    <a href='#' className='btn btn-sm btn-light-primary' onClick={() => navigate('/distribution/create')}>
+                    <a href='#' className='btn btn-sm btn-light-primary' onClick={() => setShouldShowCreationModal(true)}>
                         <KTIcon iconName='plus' className='fs-2' />
                         Create a new OS
                     </a>
@@ -114,6 +140,7 @@ export const ListOS = () => {
                                 <th className='ps-4 min-w-350px rounded-start'>Name</th>
                                 <th className='min-w-125px'>OpenStack Name</th>
                                 <th className='min-w-125px'>Created At</th>
+                                <th className='min-w-100px'></th>
                             </tr>
                         </thead>
                         {/* end::Table head */}
@@ -121,7 +148,7 @@ export const ListOS = () => {
                         <tbody>
                             {OSList.filter(({ distribution_id }) => selectedDistribution === 'all' || +selectedDistribution === distribution_id).map(item => {
                                 const distribution = distributionList.find(({ id }) => id === item.distribution_id);
-                                return <Item key={item.id} item={item} distribution={distribution} />
+                                return <Item key={item.id} item={item} distribution={distribution} refresh={refresh} />
                             })}
                         </tbody>
                         {/* end::Table body */}
@@ -131,6 +158,16 @@ export const ListOS = () => {
                 {/* end::Table container */}
             </div >
             {/* begin::Body */}
+            <Toaster position="bottom-right" reverseOrder={false} />
+            <CreateOSModal show={shouldShowCreationModal} handleClose={(shouldRefetch, error) => {
+                setShouldShowCreationModal(false);
+                if (shouldRefetch) {
+                    refresh()
+                }
+                if (error) {
+                    toast.error(error)
+                }
+            }} />
         </div >
     )
 }

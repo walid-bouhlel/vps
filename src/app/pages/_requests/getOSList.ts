@@ -21,6 +21,9 @@ export function getOSList(token: string): Promise<OSModelList> {
             'Accept': 'application/vnd.api+json',
         },
     }).then(response => {
+        if (!response.ok) {
+            throw 'Error'
+        }
         return response.json()
     });
 }

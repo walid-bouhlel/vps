@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 
 import { useAuth } from "../../../modules/auth"
+import { formatDateTime } from '../../_utils/date'
 
 export const MyProfile = () => {
     const { currentUser } = useAuth()
@@ -65,7 +66,7 @@ export const MyProfile = () => {
                     <div className='row mb-6'>
                         <label className='col-lg-4 col-form-label required fw-bold fs-6'>Created at</label>
                         <div className='col-lg-8 fv-row'>
-                            {currentUser?.created_at}
+                            {formatDateTime(currentUser?.created_at ?? null)}
                         </div>
                     </div>
                 </div>

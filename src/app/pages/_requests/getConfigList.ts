@@ -23,6 +23,9 @@ export function getConfigList(token: string): Promise<ConfigListModel> {
             'Accept': 'application/vnd.api+json',
         },
     }).then(response => {
+        if (!response.ok) {
+            throw 'Error'
+        }
         return response.json()
     });
 }
