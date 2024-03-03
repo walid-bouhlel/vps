@@ -3,12 +3,13 @@ import { SidebarMenuItem } from './SidebarMenuItem'
 import { useAuth } from '../../../../../app/modules/auth'
 
 const NormalUserMenu = () => {
-  return (<><SidebarMenuItem
-    to='/home'
-    icon='home'
-    title="Home"
-    fontIcon='bi-home'
-  />
+  return (<>
+    <SidebarMenuItem
+      to='/home'
+      icon='home'
+      title="Home"
+      fontIcon='home'
+    />
     <div className='menu-item'>
       <div className='menu-content pt-8 pb-2'>
         <span className='menu-section text-muted text-uppercase fs-8 ls-1'>VPS</span>
@@ -25,11 +26,18 @@ const NormalUserMenu = () => {
       icon='element-11'
       title="List Available VPS"
       fontIcon='bi-app-indicator'
-    /></>)
+    />
+  </>)
 }
 
 const AdminMenu = () => {
   return <>
+    <SidebarMenuItem
+      to='/home'
+      icon='home'
+      title="Home"
+      fontIcon='home'
+    />
     <SidebarMenuItem
       to='/config/list'
       icon='setting-2'

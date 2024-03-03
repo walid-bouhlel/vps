@@ -37,7 +37,7 @@ export const Config = ({
 
     return <div className='fv-row'>{
         configListOrganized.map((row) => <div className="row">
-            {row.map(config => <div className='col-lg-6'>
+            {row.map(config => <div className='col-lg-12'>
                 <Field
                     type='radio'
                     className='btn-check'
@@ -56,12 +56,12 @@ export const Config = ({
                         <span className='text-gray-900 fw-bolder d-block fs-4 mb-2'>{config.name}</span>
                         <br />
                         <span className={` ${styles['vps-info']}`}>
-                            <span><KTIcon iconName='external-drive' className='fs-3' />{config.disk} GB</span>
-                            <span><KTIcon iconName='row-vertical' className='fs-3' />{config.ram} Mb</span>
+                            <span><KTIcon iconName='external-drive' className='fs-3' /> &nbsp;{config.disk} GB</span>
+                            <span><KTIcon iconName='row-vertical' className='fs-3' /> &nbsp;{config.ram} Mb</span>
                         </span>
                         <span className={` ${styles['vps-info']}`}>
-                            <span><KTIcon iconName='calculator' className='fs-3' />{config.vcpus} vCPU</span>
-                            <span><KTIcon iconName='arrow-right-left' className='fs-3' />{config.swap} Mb</span>
+                            <span><KTIcon iconName='calculator' className='fs-3' /> &nbsp;{config.vcpus} vCPU</span>
+                            <span><KTIcon iconName='arrow-right-left' className='fs-3' /> &nbsp;{config.swap} Mb</span>
                         </span>
                     </span>
                 </label>

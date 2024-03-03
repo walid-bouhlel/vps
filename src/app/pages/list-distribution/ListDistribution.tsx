@@ -38,7 +38,7 @@ const DistributionCard = ({ distribution, OSList, refresh }: DistributionCardPro
             <div className="card md-6" >
                 <img className={`card-img-top ${styles.logo}`} src={logopath} alt={`${name} image`} />
                 <div className="card-body">
-                    <h2 className="card-title d-flex justify-content-between"><span>{name}<small>{id}</small></span> {isDeleting ? <SmallLoader /> : <div onClick={doDeleteDistribution}><KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} /></div>}</h2>
+                    <h2 className="card-title d-flex justify-content-between"><span>{name}</span> {isDeleting ? <SmallLoader /> : <div onClick={doDeleteDistribution}><KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} /></div>}</h2>
                     <p className="card-text">Created At: {formatDateTime(created_at)}</p>
                     <br />
                     {OSList.some(({ distribution_id }) => distribution_id === id) && <>
