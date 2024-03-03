@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { KTIcon } from '../../../_metronic/helpers'
 
 import styles from './ListVPS.module.scss'
@@ -9,15 +9,61 @@ import { ConfigModel, getConfigList } from '../_requests/getConfigList';
 import { OSModel, getOSList } from '../_requests/getOSList';
 import { useNavigate } from 'react-router-dom';
 import { Loader } from '../../../_metronic/layout/components/loader/Loader';
+import { getStatusVPS } from '../_requests/getStatusVPS';
+import { SmallLoader } from '../_components/SmallLoader/SmallLoader';
+import { getStartVPS } from '../_requests/getStartVPS';
+import toast, { Toaster } from 'react-hot-toast';
+import { getStopVPS } from '../_requests/getStopVPS';
+import { getRebootVPS } from '../_requests/getRebootVPS';
 
 
-type VPSItemProps = { item: VPSModel, distributionList: DistributionModel[], OSList: OSModel[], configList: ConfigModel[] }
+type VPSItemProps = {
+    item: VPSModel;
+    distributionList: DistributionModel[];
+    OSList: OSModel[];
+    configList: ConfigModel[];
+    statusMap: Record<string, string>;
+    setStatusMap: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+}
 
-const VPSItem = ({ item: { instance, server_name, description, ipv4, config_id, os_id }, distributionList, OSList, configList }: VPSItemProps) => {
+const VPSItem = ({
+    item: { id, instance, server_name, description, ipv4, config_id, os_id },
+    distributionList,
+    OSList,
+    configList,
+    statusMap,
+    setStatusMap }: VPSItemProps
+) => {
+
+    const { auth } = useAuth()
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
     const currentConfig = configList.find(({ id }) => config_id === id)
     const currentOS = OSList.find(({ id }) => id === os_id)
     const currentDistribution = distributionList.find(({ id }) => currentOS?.distribution_id === id)
 
+    const getStatus = (statusMap: Record<string, string>, id: string) => {
+        const knownVPSStatus = ['SHUTOFF', 'ACTIVE', 'BUILD', 'STOPPING', 'STARTING', 'RESTARTING'] as const;
+        const statusToComponentMap: Record<typeof knownVPSStatus[number], ReactElement> = {
+            'SHUTOFF': <span className='badge badge-light-danger fs-7 fw-semibold'>Stopped</span>,
+            'ACTIVE': <span className='badge badge-light-success fs-7 fw-semibold'>Running</span>,
+            'BUILD': <span className='badge badge-light-info fs-7 fw-semibold'>Building</span>,
+            'STOPPING': <span className='badge badge-light fs-7 fw-semibold'>Stopping ...</span>,
+            'STARTING': <span className='badge badge-light fs-7 fw-semibold'>Starting ...</span>,
+            'RESTARTING': <span className='badge badge-light fs-7 fw-semibold'>Restarting ...</span>,
+        } as const;
+
+        if (statusMap[id] === undefined) {
+            return null;
+        }
+
+        if ((knownVPSStatus).includes(statusMap[id].trim() as typeof knownVPSStatus[number])) {
+            return statusToComponentMap[statusMap[id].trim() as typeof knownVPSStatus[number]]
+        }
+
+        return (<span className='badge badge-light fs-7 fw-semibold'>{statusMap[id]}</span>)
+    }
 
     return <tr>
         <td>
@@ -62,26 +108,70 @@ const VPSItem = ({ item: { instance, server_name, description, ipv4, config_id, 
             <span className='text-muted fw-semibold text-muted d-block fs-7'>{currentOS?.name}</span>
         </td>
         <td>
-            <span className='badge badge-light-success fs-7 fw-semibold'>Running</span>
-            <span className='badge badge-light-danger fs-7 fw-semibold'>Stopped</span>
+            {getStatus(statusMap, String(id))}
         </td>
         <td className='text-end'>
-            <a
-                href='#'
-                className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
-            >
-                <KTIcon iconName='to-right' className='fs-3' />
-            </a>
-            <a href='#' className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'>
-                <KTIcon iconName='minus-circle' className='fs-3' />
-            </a>
-            <a
-                href='#'
-                className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
-            >
-                <KTIcon iconName='arrows-circle' className='fs-3' />
-            </a>
+            {isLoading ? <SmallLoader /> :
+                <>
+                    <a
+                        href='#'
+                        className='btn btn-icon btn-bg-light btn-active-color-success btn-sm me-1'
+                        onClick={() => {
+                            if (!auth?.data.token) {
+                                return;
+                            }
 
+                            setIsLoading(true);
+                            getStartVPS(auth.data.token, String(id))
+                                .then(() => {
+                                    setStatusMap(current => {
+                                        return { ...current, [id]: 'STARTING' };
+                                    })
+                                })
+                                .catch(() => toast.error('Error Occured!'))
+                                .finally(() => { setIsLoading(false) })
+                        }}
+                    >
+                        <KTIcon iconName='to-right' className='fs-3' />
+                    </a> &nbsp;
+                    <a href='#' className='btn btn-icon btn-bg-light btn-active-color-danger btn-sm' onClick={() => {
+                        if (!auth?.data.token) {
+                            return;
+                        }
+
+                        setIsLoading(true);
+                        getStopVPS(auth.data.token, String(id))
+                            .then(() => {
+                                setStatusMap(current => {
+                                    return { ...current, [id]: 'STOPPING' };
+                                })
+                            })
+                            .catch(() => toast.error('Error Occured!'))
+                            .finally(() => { setIsLoading(false) })
+                    }}>
+                        <KTIcon iconName='minus-circle' className='fs-3' />
+                    </a> &nbsp;
+                    <a
+                        href='#'
+                        className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1' onClick={() => {
+                            if (!auth?.data.token) {
+                                return;
+                            }
+
+                            setIsLoading(true);
+                            getRebootVPS(auth.data.token, String(id))
+                                .then(() => {
+                                    setStatusMap(current => {
+                                        return { ...current, [id]: 'RESTARTING' };
+                                    })
+                                })
+                                .catch(() => toast.error('Error Occured!'))
+                                .finally(() => { setIsLoading(false) })
+                        }}
+                    >
+                        <KTIcon iconName='arrows-circle' className='fs-3' />
+                    </a>
+                </>}
         </td>
     </tr>
 }
@@ -93,6 +183,7 @@ const ListVPS = () => {
     const [configList, setConfigList] = useState<ConfigModel[] | null>(null);
     const [distributionList, setDistributionList] = useState<DistributionModel[] | null>(null);
     const [OSList, setOSList] = useState<OSModel[] | null>(null);
+    const [statusMap, setStatusMap] = useState<Record<string, string>>({});
 
     const navigate = useNavigate()
 
@@ -106,6 +197,21 @@ const ListVPS = () => {
             getOSList(auth.data.token).then((response) => setOSList(response))
         }
     }, [])
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (!auth?.data.token) {
+                return;
+            }
+            VPSList?.forEach(({ id }) => {
+                getStatusVPS(auth?.data.token, String(id)).then((response) => setStatusMap(current => {
+                    return { ...current, [id]: response.status };
+                }))
+            })
+        }, 10_000)
+
+        return () => clearInterval(intervalId);
+    }, [VPSList])
 
     if (VPSList === null || configList === null || distributionList === null || OSList === null) {
         return <Loader />
@@ -147,7 +253,14 @@ const ListVPS = () => {
                     {/* end::Table head */}
                     {/* begin::Table body */}
                     <tbody>
-                        {VPSList.map(item => <VPSItem key={item.id} item={item} configList={configList} OSList={OSList} distributionList={distributionList} />)}
+                        {VPSList.map(item => <VPSItem
+                            key={item.id}
+                            item={item}
+                            configList={configList}
+                            OSList={OSList}
+                            distributionList={distributionList}
+                            statusMap={statusMap}
+                            setStatusMap={setStatusMap} />)}
                     </tbody>
                     {/* end::Table body */}
                 </table>
@@ -156,6 +269,7 @@ const ListVPS = () => {
             {/* end::Table container */}
         </div >
         {/* begin::Body */}
+        <Toaster position="bottom-right" reverseOrder={false} />
     </div >
 
 };
