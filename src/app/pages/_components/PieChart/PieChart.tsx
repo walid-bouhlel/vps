@@ -3,6 +3,7 @@ import { ResponsivePie } from '@nivo/pie'
 export const PieChart = ({ data }: React.ComponentProps<typeof ResponsivePie>) => (
     <ResponsivePie
         data={data}
+        colors={["#2980b9", "#27ae60", "#16a085", "#8e44ad", "#2c3e50", "#d35400", "#c0392b", "#2c2c54", "#474787", "#aaa69d", "#227093", "#218c74", "#b33939", "#cd6133"]}
         margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
         innerRadius={0.5}
         padAngle={0.7}

@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import { KTIcon, toAbsoluteUrl } from '../../../helpers'
-import { HeaderNotificationsMenu, HeaderUserMenu, Search, ThemeModeSwitcher } from '../../../partials'
+import { KTIcon } from '../../../helpers'
+import { HeaderUserMenu, ThemeModeSwitcher } from '../../../partials'
 import { useLayout } from '../../core'
 import { useAuth } from '../../../../app/modules/auth'
 
