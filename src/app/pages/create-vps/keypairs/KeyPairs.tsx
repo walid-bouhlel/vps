@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { KTIcon } from "../../../../_metronic/helpers/components/KTIcon"
 import { useAuth } from "../../../modules/auth"
 
@@ -65,6 +66,26 @@ export const KeyPairs = () => {
                 data={currentUser?.private_key}
                 filename="key.private"
             />
+        </div>
+        <br />
+        <div className='col-xl-12'>
+            <div className="card">
+                <div className='card-body my-3'>
+                    <h2>How to connect to your reserved VPS</h2>
+                    <ul>
+                        <li>
+                            Download your private key
+                        </li>
+                        <li>
+                            Get your VPS' IP address and user name from the <Link to="/vps/list">VPS list</Link>
+                        </li>
+                        <li>
+                            Use the following command to login to the VPS
+                            <pre><code>ssh remote_server_user@remote_server_ip</code></pre>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div >
         ;

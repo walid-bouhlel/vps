@@ -1,11 +1,50 @@
-import { useEffect } from 'react'
+import { useEffect, useState, ReactNode } from 'react'
 import { ILayout, useLayout } from '../../core'
+import { Modal } from 'react-bootstrap'
+import { createPortal } from 'react-dom'
+import { KTIcon } from '../../../helpers'
+
+const InfoModal = ({ title, show, handleClose, children }: { title: string; show: boolean; handleClose: () => void; children: ReactNode }) => {
+  const modalsRoot = document.getElementById('root-modals') || document.body
+  return createPortal(
+    <Modal
+      id='kt_modal_create_app'
+      tabIndex={-1}
+      aria-hidden='true'
+      dialogClassName='modal-dialog modal-dialog-centered mw-900px'
+      show={show}
+      onHide={() => {
+        handleClose()
+
+      }}
+      backdrop={true}
+    >
+      <div className='modal-header'>
+        <h2>{title}</h2>
+        {/* begin::Close */}
+        <div className='btn btn-sm btn-icon btn-active-color-primary' onClick={() => {
+          handleClose()
+        }}>
+          <KTIcon className='fs-1' iconName='cross' />
+        </div>
+        {/* end::Close */}
+      </div>
+      <div className="container" style={{ height: 'auto', margin: 32 }}>{children}</div>
+    </Modal>,
+    modalsRoot
+  )
+}
 
 const Footer = () => {
+  const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
+
   const { config } = useLayout()
   useEffect(() => {
     updateDOM(config)
   }, [config])
+
+
   return (
     <>
       <div className='text-gray-900 order-2 order-md-1'>
@@ -23,17 +62,29 @@ const Footer = () => {
 
       <ul className='menu menu-gray-600 menu-hover-primary fw-semibold order-1'>
         <li className='menu-item'>
-          <a href='#' className='menu-link px-2'>
+          <span className='menu-link px-2' onClick={() => setShowAboutModal(true)}>
             About
-          </a>
+          </span>
         </li>
 
         <li className='menu-item'>
-          <a href='#' className='menu-link px-2'>
+          <span className='menu-link px-2' onClick={() => setShowSupportModal(true)}>
             Support
-          </a>
+          </span>
         </li>
       </ul>
+      <InfoModal title="About" show={showAboutModal} handleClose={() => setShowAboutModal(false)} >
+        <div>
+          {/** DELETE THIS COMMENT: TODO: change content here */}
+          This is an end of studies project for the <a href="https://esprit.tn" target="_blank">ESPRIT</a> engineering school.
+        </div>
+      </InfoModal>
+      <InfoModal title="Support" show={showSupportModal} handleClose={() => setShowSupportModal(false)} >
+        <div>
+          {/** DELETE THIS COMMENT: TODO: change content here */}
+          For support please contact <a href="emailto:hello@vps.bouhlel.com">hello@vps.bouhlel.com</a>
+        </div>
+      </InfoModal>
     </>
   )
 }
