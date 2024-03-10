@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useEffect, useRef, useState } from 'react';
 import { KTIcon } from '../../../_metronic/helpers'
 
 import styles from './ListVPS.module.scss'
@@ -32,10 +32,11 @@ const VPSItem = ({
     OSList,
     configList,
     statusMap,
-    setStatusMap }: VPSItemProps
+    setStatusMap,
+}: VPSItemProps
 ) => {
 
-    const { auth } = useAuth()
+    const { auth } = useAuth();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -205,6 +206,12 @@ const ListVPS = () => {
             }
             VPSList?.forEach(({ id }) => {
                 getStatusVPS(auth?.data.token, String(id)).then((response) => setStatusMap(current => {
+                    if (current[id] === 'STOPPING' && response.status === 'ACTIVE') {
+                        return { ...current };
+                    }
+                    if (current[id] === 'STARTING' && response.status === 'SHUTOFF') {
+                        return { ...current };
+                    }
                     return { ...current, [id]: response.status };
                 }))
             })
@@ -260,7 +267,8 @@ const ListVPS = () => {
                             OSList={OSList}
                             distributionList={distributionList}
                             statusMap={statusMap}
-                            setStatusMap={setStatusMap} />)}
+                            setStatusMap={setStatusMap}
+                        />)}
                     </tbody>
                     {/* end::Table body */}
                 </table>

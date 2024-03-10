@@ -11,6 +11,7 @@ import { OSModel, getOSList } from "../_requests/getOSList";
 import { CreateOSModal } from "./CreateOSModal";
 import { deleteOS } from "../_requests/deleteOS";
 import { SmallLoader } from "../_components/SmallLoader/SmallLoader";
+import { ConfirmDeleteModal } from "../_components/ConfirmDeleteModal/ConfirmDeleteModal";
 
 type ItemProps = { item: OSModel, distribution?: DistributionModel, refresh: () => void }
 
@@ -18,6 +19,17 @@ const Item = ({ item: { id, idInStack, name, nameInStack, version, created_at },
 
     const { auth } = useAuth();
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+    const doDeleteOS = () => {
+        if (auth?.data.token) {
+            setIsDeleting(true)
+            deleteOS(auth?.data.token, String(id)).then(() => { refresh(); }).catch(() => { toast.error('Error occured') }).finally(() => {
+                setIsDeleting(false);
+            })
+        }
+    };
+
+    const [shouldShowDeletionModal, setShouldShowDeletionModal] = useState<boolean>(false);
 
     return <tr>
         <td>
@@ -53,16 +65,15 @@ const Item = ({ item: { id, idInStack, name, nameInStack, version, created_at },
             </span>
 
         </td>
-        <td onClick={() => {
-            if (auth?.data.token) {
-                setIsDeleting(true)
-                deleteOS(auth?.data.token, String(id)).then(() => { refresh(); }).catch(() => { toast.error('Error occured') }).finally(() => {
-                    setIsDeleting(false);
-                })
-            }
-        }}>
+        <td onClick={() => setShouldShowDeletionModal(true)}>
             <div className={styles.deleteButtonContainer}>{isDeleting ? <SmallLoader /> : <KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} />}</div>
         </td>
+        <ConfirmDeleteModal
+            objectToDelete={`${name}`}
+            show={shouldShowDeletionModal}
+            handleClose={() => setShouldShowDeletionModal(false)}
+            handleConfirm={() => doDeleteOS()}
+        />
     </tr>
 }
 

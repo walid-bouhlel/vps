@@ -11,6 +11,7 @@ import { CreateDistributionModal } from "./CreateDistributionModal";
 import toast, { Toaster } from "react-hot-toast";
 import { SmallLoader } from "../_components/SmallLoader/SmallLoader";
 import { deleteDistribution } from "../_requests/deleteDistribution";
+import { ConfirmDeleteModal } from "../_components/ConfirmDeleteModal/ConfirmDeleteModal";
 
 type DistributionCardProps = {
     distribution: DistributionModel;
@@ -21,6 +22,7 @@ type DistributionCardProps = {
 
 const DistributionCard = ({ distribution, OSList, refresh }: DistributionCardProps) => {
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
+    const [shouldShowDeletionModal, setShouldShowDeletionModal] = useState<boolean>(false);
 
     const { id, logopath, name, created_at } = distribution;
 
@@ -38,7 +40,7 @@ const DistributionCard = ({ distribution, OSList, refresh }: DistributionCardPro
             <div className="card md-6" >
                 <img className={`card-img-top ${styles.logo}`} src={logopath} alt={`${name} image`} />
                 <div className="card-body">
-                    <h2 className="card-title d-flex justify-content-between"><span>{name}</span> {isDeleting ? <SmallLoader /> : <div onClick={doDeleteDistribution}><KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} /></div>}</h2>
+                    <h2 className="card-title d-flex justify-content-between"><span>{name}</span> {isDeleting ? <SmallLoader /> : <div onClick={() => setShouldShowDeletionModal(true)}><KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} /></div>}</h2>
                     <p className="card-text">Created At: {formatDateTime(created_at)}</p>
                     <br />
                     {OSList.some(({ distribution_id }) => distribution_id === id) && <>
@@ -49,8 +51,14 @@ const DistributionCard = ({ distribution, OSList, refresh }: DistributionCardPro
                     </>}
                 </div>
             </div>
-        </div >
-    </div >
+        </div>
+        <ConfirmDeleteModal
+            objectToDelete={`${distribution.name}`}
+            show={shouldShowDeletionModal}
+            handleClose={() => setShouldShowDeletionModal(false)}
+            handleConfirm={() => doDeleteDistribution()}
+        />
+    </div>
 }
 
 export const ListDistribution = () => {

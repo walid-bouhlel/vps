@@ -13,15 +13,26 @@ import { SmallLoader } from '../_components/SmallLoader/SmallLoader';
 
 
 import styles from './ListConfig.module.scss'
+import { ConfirmDeleteModal } from '../_components/ConfirmDeleteModal/ConfirmDeleteModal';
 
 
 type ItemProps = { item: ConfigModel; refresh: () => void; }
 
 const Item = ({ item: { id, disk, name, nameInStack, ram, stackId, swap, vcpus, created_at }, refresh }: ItemProps) => {
 
-    const { auth } = useAuth()
-    const [isDeleting, setIsDeleting] = useState<boolean>(false)
+    const { auth } = useAuth();
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
+    const [shouldShowCreationModal, setShouldShowCreationModal] = useState<boolean>(false);
+
+    const doDeleteConfig = () => {
+        if (auth?.data.token) {
+            setIsDeleting(true)
+            deleteConfig(auth?.data.token, String(id)).then(() => { refresh(); }).catch(() => { toast.error('Error occured') }).finally(() => {
+                setIsDeleting(false);
+            })
+        }
+    };
 
     return <tr>
         <td>
@@ -69,18 +80,16 @@ const Item = ({ item: { id, disk, name, nameInStack, ram, stackId, swap, vcpus, 
             </span>
 
         </td>
-        <td onClick={() => {
-            if (auth?.data.token) {
-                setIsDeleting(true)
-                deleteConfig(auth?.data.token, String(id)).then(() => { refresh(); }).catch(() => { toast.error('Error occured') }).finally(() => {
-                    setIsDeleting(false);
-                })
-            }
-        }}>
+        <td onClick={() => setShouldShowCreationModal(true)}>
             <div className={styles.deleteButtonContainer}>{isDeleting ? <SmallLoader /> : <KTIcon iconName='trash-square' className={`fs-1 text-hover-danger ${styles.deleteButton}`} />}</div>
         </td>
 
-
+        <ConfirmDeleteModal
+            objectToDelete={`${name}`}
+            show={shouldShowCreationModal}
+            handleClose={() => setShouldShowCreationModal(false)}
+            handleConfirm={doDeleteConfig}
+        />
     </tr>
 }
 
