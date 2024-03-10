@@ -1,6 +1,6 @@
 import { FC, Suspense } from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
-import { MasterLayout } from '../../_metronic/layout/MasterLayout'
+import { MasterLayout } from '../layout/MasterLayout'
 import TopBarProgress from 'react-topbar-progress-indicator'
 import { Dashboard } from '../pages/dashboard/Dashboard'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'

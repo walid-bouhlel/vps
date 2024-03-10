@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import zod, { z } from 'zod'
 import { postCreateDistribution } from '../_requests/postCreateDistribution';
 import { useAuth } from '../../modules/auth';
-import { Loader } from '../../../_metronic/layout/components/loader/Loader';
+import { Loader } from '../../layout/components/loader/Loader';
 import { TextField } from '../_components/TextField/TextField';
 
 type Props = {

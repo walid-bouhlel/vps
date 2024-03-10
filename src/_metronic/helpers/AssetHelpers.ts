@@ -1,4 +1,4 @@
-import { useLayout } from "../layout/core";
+import { useLayout } from "../../app/layout/core";
 import { ThemeModeComponent } from "../assets/ts/layout";
 
 export const toAbsoluteUrl = (pathname: string) =>
@@ -14,9 +14,9 @@ export const useIllustrationsPath = (illustrationName: string): string => {
   const illustration =
     ThemeModeComponent.getMode() === "dark"
       ? `${illustrationName.substring(
-          0,
-          illustrationName.lastIndexOf(".")
-        )}-dark`
+        0,
+        illustrationName.lastIndexOf(".")
+      )}-dark`
       : illustrationName.substring(0, illustrationName.lastIndexOf("."));
   return toAbsoluteUrl(
     `media/illustrations/${config.illustrations?.set}/${illustration}${extension}`

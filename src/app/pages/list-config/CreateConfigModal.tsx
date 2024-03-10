@@ -4,7 +4,7 @@ import { KTIcon } from '../../../_metronic/helpers'
 import { useEffect, useRef, useState } from 'react';
 import zod, { z } from 'zod'
 import { useAuth } from '../../modules/auth';
-import { Loader } from '../../../_metronic/layout/components/loader/Loader';
+import { Loader } from '../../layout/components/loader/Loader';
 import { FlavorStackListModel, getFlavorStackList } from '../_requests/getFlavorStackList';
 import { TextField } from '../_components/TextField/TextField';
 import { postCreateConfig } from '../_requests/postCreateConfig';

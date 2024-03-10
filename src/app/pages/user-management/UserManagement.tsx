@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../modules/auth"
 import { UserModel, getUserList } from "../_requests/getUsersList";
-import { Loader } from "../../../_metronic/layout/components/loader/Loader";
+import { Loader } from "../../layout/components/loader/Loader";
 import toast, { Toaster } from "react-hot-toast";
 import { formatDateTime } from "../_utils/date";
 

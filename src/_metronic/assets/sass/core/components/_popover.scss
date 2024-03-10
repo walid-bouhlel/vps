@@ -19,7 +19,7 @@
         right: $popover-dissmis-btn-end;
         height: $popover-dissmis-btn-size;
         width: $popover-dissmis-btn-size;
-        @include svg-bg-icon(close, var(--#{$prefix}gray-500)); // todo: revise
+        @include svg-bg-icon(close, var(--#{$prefix}gray-500));
         mask-size: 50%;
         -webkit-mask-size: 50%;
 
@@ -27,7 +27,7 @@
             background-color: var(--#{$prefix}primary);
         }
 
-        & + .popover-header {
+        &+.popover-header {
             padding-right: $popover-body-padding-x + $popover-dissmis-btn-size;
         }
     }

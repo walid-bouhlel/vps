@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
-import { LayoutProvider, LayoutSplashScreen } from '../_metronic/layout/core'
-import { MasterInit } from '../_metronic/layout/MasterInit'
+import { LayoutProvider, LayoutSplashScreen } from './layout/core'
+import { MasterInit } from './layout/MasterInit'
 import { AuthInit } from './modules/auth'
-import { ThemeModeProvider } from '../_metronic/partials'
+import { ThemeModeProvider } from './layout/components/header-actions'
 
 const App = () => {
   return (

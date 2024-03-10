@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { FC, useState, useEffect, createContext, useContext, Dispatch, SetStateAction } from 'react'
-import { LayoutSplashScreen } from '../../../../_metronic/layout/core'
+import { LayoutSplashScreen } from '../../../layout/core'
 import { AuthModel, UserModel } from './_models'
 import * as authHelper from './AuthHelpers'
 import { getUserByToken } from './_requests'

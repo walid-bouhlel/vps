@@ -8,7 +8,7 @@ import { DistributionModel, getDistributionList } from '../_requests/getDistribu
 import { ConfigModel, getConfigList } from '../_requests/getConfigList';
 import { OSModel, getOSList } from '../_requests/getOSList';
 import { useNavigate } from 'react-router-dom';
-import { Loader } from '../../../_metronic/layout/components/loader/Loader';
+import { Loader } from '../../layout/components/loader/Loader';
 import { getStatusVPS } from '../_requests/getStatusVPS';
 import { SmallLoader } from '../_components/SmallLoader/SmallLoader';
 import { getStartVPS } from '../_requests/getStartVPS';

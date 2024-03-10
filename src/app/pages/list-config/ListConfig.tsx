@@ -4,7 +4,7 @@ import { KTIcon } from '../../../_metronic/helpers'
 
 import { useAuth } from '../../modules/auth';
 import { ConfigModel, getConfigList } from '../_requests/getConfigList';
-import { Loader } from '../../../_metronic/layout/components/loader/Loader';
+import { Loader } from '../../layout/components/loader/Loader';
 import { formatDateTime } from '../_utils/date';
 import { CreateConfigModal } from './CreateConfigModal';
 import toast, { Toaster } from 'react-hot-toast';

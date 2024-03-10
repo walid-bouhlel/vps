@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { DistributionModel, getDistributionList } from "../_requests/getDistributionList";
 import { KTIcon } from "../../../_metronic/helpers";
-import { Loader } from "../../../_metronic/layout/components/loader/Loader";
+import { Loader } from "../../layout/components/loader/Loader";
 import { useAuth } from "../../modules/auth";
 import { formatDateTime } from "../_utils/date";
 

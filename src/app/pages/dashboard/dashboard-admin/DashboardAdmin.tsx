@@ -6,7 +6,7 @@ import { DistributionModel, getDistributionList } from "../../_requests/getDistr
 import { OSModel, getOSList } from "../../_requests/getOSList";
 import { ConfigModel, getConfigList } from "../../_requests/getConfigList";
 import { PieChart } from "../../_components/PieChart/PieChart";
-import { Loader } from "../../../../_metronic/layout/components/loader/Loader";
+import { Loader } from "../../../layout/components/loader/Loader";
 import { useAuth } from "../../../modules/auth";
 import { Link } from "react-router-dom";
 import { SwarmPlot } from "../../_components/SwarmPlot/SwarmPlot";

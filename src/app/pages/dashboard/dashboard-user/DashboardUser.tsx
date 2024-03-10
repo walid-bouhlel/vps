@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuth } from "../../../modules/auth";
 import { VPSModel, getVPSList } from "../../_requests/getVPSList";
-import { Loader } from "../../../../_metronic/layout/components/loader/Loader";
+import { Loader } from "../../../layout/components/loader/Loader";
 import { ConfigModel, getConfigList } from "../../_requests/getConfigList";
 import { PieChart } from "../../_components/PieChart/PieChart";
 import { formatDateTime } from "../../_utils/date";
